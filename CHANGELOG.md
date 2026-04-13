@@ -6,6 +6,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.1.0] — 2026-04-13
+
+### Added
+- **Project Issues** — expanding a project in the sidebar now shows its issues as child nodes
+- Issue count per project is now fetched live instead of showing 0
+
+### Fixed
+- Projects section no longer displays "0 issues" for every project
+
+---
+
 ## [1.0.0] — 2025-04-13
 
 ### Added

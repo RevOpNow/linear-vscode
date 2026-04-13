@@ -3,7 +3,15 @@
   "displayName": "Linear Connector",
   "description": "Connect your VSCode workspace to your Linear subscription — browse, create, and update issues without leaving the editor.",
   "version": "1.0.0",
+  "icon": "icon.png",
   "publisher": "revopnow",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RevOpNow/linear-vscode"
+  },
+  "galleryBanner": {
+    "color": "#4B6EC7"
+  },
   "engines": {
     "vscode": "^1.85.0"
   },

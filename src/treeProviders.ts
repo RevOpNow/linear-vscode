@@ -217,9 +217,11 @@ export class ProjectsProvider implements vscode.TreeDataProvider<ProjectNode> {
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
   private projects: LinearProject[] = [];
+  private issueCache: Map<string, LinearIssue[]> = new Map();
 
   refresh(): void {
     this.projects = [];
+    this.issueCache.clear();
     this._onDidChangeTreeData.fire();
   }
 
@@ -233,16 +235,38 @@ export class ProjectsProvider implements vscode.TreeDataProvider<ProjectNode> {
     if (!element) {
       try {
         this.projects = await linearApi.getProjects();
-        return this.projects.map(
-          (p) => new GroupTreeItem(`${p.name}  (${Math.round(p.progress * 100)}%)`, p.id, 'project', 0),
-        );
+        const config = vscode.workspace.getConfiguration('linear');
+        const showCompleted: boolean = config.get('showCompleted', false);
+        const children: GroupTreeItem[] = [];
+        for (const p of this.projects) {
+          const issues = await this.getProjectIssues(p.id, showCompleted);
+          children.push(
+            new GroupTreeItem(`${p.name}  (${Math.round(p.progress * 100)}%)`, p.id, 'project', issues.length),
+          );
+        }
+        return children;
       } catch {
         return [];
       }
     }
 
-    // Expanded project: issues are not fetched per-project here to keep load fast.
-    // A real implementation could call getTeamIssues filtered by projectId.
+    if (element instanceof GroupTreeItem && element.groupType === 'project') {
+      const config = vscode.workspace.getConfiguration('linear');
+      const showCompleted: boolean = config.get('showCompleted', false);
+      const issues = await this.getProjectIssues(element.groupId, showCompleted);
+      if (issues.length === 0) {
+        return [new MessageTreeItem('No open issues', 'check') as unknown as IssueTreeItem];
+      }
+      return issues.map((i) => new IssueTreeItem(i));
+    }
+
     return [];
+  }
+
+  private async getProjectIssues(projectId: string, showCompleted: boolean): Promise<LinearIssue[]> {
+    if (this.issueCache.has(projectId)) return this.issueCache.get(projectId)!;
+    const issues = await linearApi.getProjectIssues(projectId, showCompleted);
+    this.issueCache.set(projectId, issues);
+    return issues;
   }
 }

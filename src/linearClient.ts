@@ -224,6 +224,22 @@ export class LinearApiClient {
 
   // ── Projects ──────────────────────────────────────────────────────────────
 
+  async getProjectIssues(projectId: string, includeCompleted = false): Promise<LinearIssue[]> {
+    this.assertConnected();
+    const filter: Record<string, unknown> = {
+      project: { id: { eq: projectId } },
+    };
+    if (!includeCompleted) {
+      filter['state'] = { type: { nin: ['completed', 'cancelled'] } };
+    }
+    const result = await this.client!.issues({
+      filter: filter as any,
+      orderBy: 'updatedAt' as any,
+      first: 100,
+    });
+    return this.mapIssues(result.nodes);
+  }
+
   async getProjects(): Promise<LinearProject[]> {
     this.assertConnected();
     const result = await this.client!.projects({ first: 50 });
