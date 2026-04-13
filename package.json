@@ -1,0 +1,217 @@
+{
+  "name": "linear-connector",
+  "displayName": "Linear Connector",
+  "description": "Connect your VSCode workspace to your Linear subscription — browse, create, and update issues without leaving the editor.",
+  "version": "1.0.0",
+  "publisher": "revopnow",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "linear",
+    "issues",
+    "project management",
+    "tasks"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "linearConnector",
+          "title": "Linear",
+          "icon": "resources/linear-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "linearConnector": [
+        {
+          "id": "linear.myIssues",
+          "name": "My Issues"
+        },
+        {
+          "id": "linear.teamIssues",
+          "name": "Team Issues"
+        },
+        {
+          "id": "linear.projects",
+          "name": "Projects"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "linear.authenticate",
+        "title": "Linear: Set API Key",
+        "icon": "$(key)"
+      },
+      {
+        "command": "linear.signOut",
+        "title": "Linear: Sign Out"
+      },
+      {
+        "command": "linear.refreshAll",
+        "title": "Linear: Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "linear.createIssue",
+        "title": "Linear: Create Issue",
+        "icon": "$(add)"
+      },
+      {
+        "command": "linear.openIssue",
+        "title": "Linear: Open Issue Detail",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "linear.openInBrowser",
+        "title": "Linear: Open in Browser",
+        "icon": "$(link-external)"
+      },
+      {
+        "command": "linear.updateStatus",
+        "title": "Linear: Update Status"
+      },
+      {
+        "command": "linear.searchIssues",
+        "title": "Linear: Search Issues",
+        "icon": "$(search)"
+      },
+      {
+        "command": "linear.copyIssueId",
+        "title": "Linear: Copy Issue ID"
+      },
+      {
+        "command": "linear.copyIssueBranch",
+        "title": "Linear: Copy Git Branch Name"
+      },
+      {
+        "command": "linear.startIssue",
+        "title": "Linear: Start Issue"
+      },
+      {
+        "command": "linear.filterByPriority",
+        "title": "Linear: Filter by Priority",
+        "icon": "$(filter)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "linear.createIssue",
+          "when": "view == linear.myIssues",
+          "group": "navigation"
+        },
+        {
+          "command": "linear.refreshAll",
+          "when": "view == linear.myIssues || view == linear.teamIssues || view == linear.projects",
+          "group": "navigation"
+        },
+        {
+          "command": "linear.searchIssues",
+          "when": "view == linear.myIssues || view == linear.teamIssues",
+          "group": "navigation"
+        },
+        {
+          "command": "linear.filterByPriority",
+          "when": "view == linear.myIssues || view == linear.teamIssues",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "linear.openIssue",
+          "when": "viewItem == issue",
+          "group": "inline"
+        },
+        {
+          "command": "linear.openInBrowser",
+          "when": "viewItem == issue",
+          "group": "inline"
+        },
+        {
+          "command": "linear.updateStatus",
+          "when": "viewItem == issue",
+          "group": "issue@1"
+        },
+        {
+          "command": "linear.startIssue",
+          "when": "viewItem == issue",
+          "group": "issue@2"
+        },
+        {
+          "command": "linear.copyIssueId",
+          "when": "viewItem == issue",
+          "group": "copy@1"
+        },
+        {
+          "command": "linear.copyIssueBranch",
+          "when": "viewItem == issue",
+          "group": "copy@2"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Linear Connector",
+      "properties": {
+        "linear.defaultTeam": {
+          "type": "string",
+          "default": "",
+          "description": "Default team key to filter issues (leave blank for all)"
+        },
+        "linear.showCompleted": {
+          "type": "boolean",
+          "default": false,
+          "description": "Include completed/cancelled issues in tree views"
+        },
+        "linear.priorityFilter": {
+          "type": "string",
+          "default": "all",
+          "enum": [
+            "all",
+            "urgent",
+            "high",
+            "medium",
+            "low",
+            "no_priority"
+          ],
+          "description": "Minimum priority to display"
+        },
+        "linear.autoRefreshMinutes": {
+          "type": "number",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 60,
+          "description": "Auto-refresh interval in minutes"
+        },
+        "linear.statusBarEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show active issue count in status bar"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "dependencies": {
+    "@linear/sdk": "^23.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.39",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.9.3"
+  }
+}
